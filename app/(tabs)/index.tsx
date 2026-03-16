@@ -1,4 +1,7 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, FlatList, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useBodyDataContext } from '../../contexts/BodyDataContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const getWeatherEmoji = (score: number) => {
   if (score >= 80) return '☀️';
@@ -7,205 +10,274 @@ const getWeatherEmoji = (score: number) => {
   return '🌧️';
 };
 
-const getWeatherLabel = (score: number) => {
-  if (score >= 80) return 'Zi Excelentă';
-  if (score >= 60) return 'Zi Bună';
-  if (score >= 40) return 'Zi Moderată';
-  return 'Zi Dificilă';
-};
+function AnimatedScore({ target, color }: { target: number; color: string }) {
+  const [displayed, setDisplayed] = useState(0);
+  const animVal = useRef(new Animated.Value(0)).current;
 
-const getInsight = (score: number) => {
-  if (score >= 80) return 'Corpul tău e în formă maximă azi. Ideal pentru muncă creativă și decizii importante.';
-  if (score >= 60) return 'Energie bună. Programează sarcinile grele dimineața, relaxează-te după prânz.';
-  if (score >= 40) return 'Zi moderată. Evită suprasolicitarea și ia pauze scurte la fiecare oră.';
-  return 'Corpul tău are nevoie de recuperare azi. Prioritizează somnul și hidratarea.';
-};
+  useEffect(() => {
+    animVal.setValue(0);
+    Animated.timing(animVal, {
+      toValue: target,
+      duration: 1200,
+      useNativeDriver: false,
+    }).start();
+    const listener = animVal.addListener(({ value }) => {
+      setDisplayed(Math.round(value));
+    });
+    return () => animVal.removeListener(listener);
+  }, [target]);
 
-const getAction = (score: number) => {
-  if (score >= 80) return '💡 Profită de energie — programează cea mai importantă întâlnire azi.';
-  if (score >= 60) return '🚶 Fă 15 minute de mers pe jos după prânz pentru a menține energia.';
-  if (score >= 40) return '💧 Bea 2 pahare de apă acum și ia o pauză de 10 minute.';
-  return '😴 Culcă-te cu 1 oră mai devreme în seara asta.';
-};
-
-// Simulăm un scor — îl vom înlocui cu date reale din Apple Health
-const SCORE_DEMO = 72;
+  return <Text style={[styles.scor, { color }]}>{displayed}</Text>;
+}
 
 export default function HomeScreen() {
-  const score = SCORE_DEMO;
-  const emoji = getWeatherEmoji(score);
-  const label = getWeatherLabel(score);
-  const insight = getInsight(score);
-  const action = getAction(score);
+  const { liveScore, todayInputs } = useBodyDataContext();
+  const { t, lang, changeLang, AVAILABLE_LANGUAGES } = useLanguage();
+  const [showLangModal, setShowLangModal] = useState(false);
+
+  const score = liveScore.total;
+  const scoreColor = liveScore.color || '#a78bfa';
+  const scoreEmoji = liveScore.emoji || getWeatherEmoji(score);
   const ora = new Date().getHours();
-  const salut = ora < 12 ? 'Bună dimineața' : ora < 18 ? 'Bună ziua' : 'Bună seara';
+  const salut = ora < 12 ? t.goodMorning : ora < 18 ? t.goodAfternoon : t.goodEvening;
+
+  const getLocale = () => {
+    if (lang === 'ro') return 'ro-RO';
+    if (lang === 'fr') return 'fr-FR';
+    if (lang === 'de') return 'de-DE';
+    if (lang === 'es') return 'es-ES';
+    if (lang === 'it') return 'it-IT';
+    if (lang === 'pt') return 'pt-PT';
+    if (lang === 'zh') return 'zh-CN';
+    return 'en-US';
+  };
+
+  const getLabel = () => {
+    if (score >= 80) return t.excellent;
+    if (score >= 60) return t.good;
+    if (score >= 40) return t.moderate;
+    return t.difficult;
+  };
+
+  const getInsight = () => {
+    if (score >= 80) {
+      if (lang === 'ro') return 'Corpul tău e în formă maximă azi. Ideal pentru muncă creativă și decizii importante.';
+      if (lang === 'fr') return 'Votre corps est au top aujourd\'hui. Idéal pour le travail créatif et les décisions importantes.';
+      if (lang === 'de') return 'Dein Körper ist heute in Topform. Ideal für kreative Arbeit und wichtige Entscheidungen.';
+      if (lang === 'es') return 'Tu cuerpo está en su mejor momento hoy. Ideal para trabajo creativo y decisiones importantes.';
+      if (lang === 'it') return 'Il tuo corpo è in forma oggi. Ideale per lavoro creativo e decisioni importanti.';
+      if (lang === 'pt') return 'O seu corpo está em ótima forma hoje. Ideal para trabalho criativo e decisões importantes.';
+      if (lang === 'zh') return '您的身体今天状态极佳。非常适合创意工作和重要决策。';
+      return 'Your body is at peak performance today. Ideal for creative work and important decisions.';
+    }
+    if (score >= 60) {
+      if (lang === 'ro') return 'Energie bună. Programează sarcinile grele dimineața, relaxează-te după prânz.';
+      if (lang === 'fr') return 'Bonne énergie. Planifiez les tâches difficiles le matin, détendez-vous après le déjeuner.';
+      if (lang === 'de') return 'Gute Energie. Plane schwere Aufgaben morgens, entspanne dich nach dem Mittagessen.';
+      if (lang === 'es') return 'Buena energía. Programa las tareas difíciles por la mañana, relájate después del almuerzo.';
+      if (lang === 'it') return 'Buona energia. Pianifica i compiti difficili la mattina, rilassati dopo pranzo.';
+      if (lang === 'pt') return 'Boa energia. Programe as tarefas difíceis de manhã, relaxe depois do almoço.';
+      if (lang === 'zh') return '能量良好。把困难的任务安排在上午，午饭后放松一下。';
+      return 'Good energy. Schedule demanding tasks in the morning, relax after lunch.';
+    }
+    if (score >= 40) {
+      if (lang === 'ro') return 'Zi moderată. Evită suprasolicitarea și ia pauze scurte la fiecare oră.';
+      if (lang === 'fr') return 'Journée modérée. Évitez la surcharge et faites de courtes pauses toutes les heures.';
+      if (lang === 'de') return 'Mäßiger Tag. Vermeide Überlastung und mache jede Stunde kurze Pausen.';
+      if (lang === 'es') return 'Día moderado. Evita la sobrecarga y toma pausas cortas cada hora.';
+      if (lang === 'it') return 'Giornata moderata. Evita il sovraccarico e fai brevi pause ogni ora.';
+      if (lang === 'pt') return 'Dia moderado. Evite a sobrecarga e faça pausas curtas a cada hora.';
+      if (lang === 'zh') return '状态一般。避免过度劳累，每小时休息一下。';
+      return 'Moderate day. Avoid overexertion and take short breaks every hour.';
+    }
+    if (lang === 'ro') return 'Corpul tău are nevoie de recuperare azi. Prioritizează somnul și hidratarea.';
+    if (lang === 'fr') return 'Votre corps a besoin de récupération aujourd\'hui. Privilégiez le sommeil et l\'hydratation.';
+    if (lang === 'de') return 'Dein Körper braucht heute Erholung. Priorisiere Schlaf und Flüssigkeitszufuhr.';
+    if (lang === 'es') return 'Tu cuerpo necesita recuperación hoy. Prioriza el sueño y la hidratación.';
+    if (lang === 'it') return 'Il tuo corpo ha bisogno di recupero oggi. Dai priorità al sonno e all\'idratazione.';
+    if (lang === 'pt') return 'O seu corpo precisa de recuperação hoje. Priorize o sono e a hidratação.';
+    if (lang === 'zh') return '您的身体今天需要恢复。优先保证睡眠和补水。';
+    return 'Your body needs recovery today. Prioritize sleep and hydration.';
+  };
+
+  const getAction = () => {
+    if (score >= 80) {
+      if (lang === 'ro') return '💡 Profită de energie — programează cea mai importantă întâlnire azi.';
+      if (lang === 'fr') return '💡 Profitez de votre énergie — planifiez votre réunion la plus importante aujourd\'hui.';
+      if (lang === 'de') return '💡 Nutze deine Energie — plane dein wichtigstes Meeting heute.';
+      if (lang === 'es') return '💡 Aprovecha tu energía — programa tu reunión más importante hoy.';
+      if (lang === 'it') return '💡 Sfrutta la tua energia — pianifica il tuo incontro più importante oggi.';
+      if (lang === 'pt') return '💡 Aproveite a sua energia — agende a sua reunião mais importante hoje.';
+      if (lang === 'zh') return '💡 利用您的能量——今天安排最重要的会议。';
+      return '💡 Leverage your energy — schedule your most important meeting today.';
+    }
+    if (score >= 60) {
+      if (lang === 'ro') return '🚶 Fă 15 minute de mers pe jos după prânz pentru a menține energia.';
+      if (lang === 'fr') return '🚶 Faites 15 minutes de marche après le déjeuner pour maintenir votre énergie.';
+      if (lang === 'de') return '🚶 Gehe nach dem Mittagessen 15 Minuten spazieren, um deine Energie zu erhalten.';
+      if (lang === 'es') return '🚶 Camina 15 minutos después del almuerzo para mantener tu energía.';
+      if (lang === 'it') return '🚶 Cammina 15 minuti dopo pranzo per mantenere la tua energia.';
+      if (lang === 'pt') return '🚶 Caminhe 15 minutos após o almoço para manter a sua energia.';
+      if (lang === 'zh') return '🚶 午饭后步行15分钟以保持能量。';
+      return '🚶 Take a 15-minute walk after lunch to maintain your energy.';
+    }
+    if (score >= 40) {
+      if (lang === 'ro') return '💧 Bea 2 pahare de apă acum și ia o pauză de 10 minute.';
+      if (lang === 'fr') return '💧 Buvez 2 verres d\'eau maintenant et faites une pause de 10 minutes.';
+      if (lang === 'de') return '💧 Trinke jetzt 2 Gläser Wasser und mache eine 10-minütige Pause.';
+      if (lang === 'es') return '💧 Bebe 2 vasos de agua ahora y toma un descanso de 10 minutos.';
+      if (lang === 'it') return '💧 Bevi 2 bicchieri d\'acqua ora e fai una pausa di 10 minuti.';
+      if (lang === 'pt') return '💧 Beba 2 copos de água agora e faça uma pausa de 10 minutos.';
+      if (lang === 'zh') return '💧 现在喝2杯水，休息10分钟。';
+      return '💧 Drink 2 glasses of water now and take a 10-minute break.';
+    }
+    if (lang === 'ro') return '😴 Culcă-te cu 1 oră mai devreme în seara asta.';
+    if (lang === 'fr') return '😴 Couchez-vous 1 heure plus tôt ce soir.';
+    if (lang === 'de') return '😴 Gehe heute Abend 1 Stunde früher ins Bett.';
+    if (lang === 'es') return '😴 Acuéstate 1 hora antes esta noche.';
+    if (lang === 'it') return '😴 Vai a letto 1 ora prima stasera.';
+    if (lang === 'pt') return '😴 Deite-se 1 hora mais cedo esta noite.';
+    if (lang === 'zh') return '😴 今晚早睡1小时。';
+    return '😴 Go to bed 1 hour earlier tonight.';
+  };
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  const renderLangItem = ({ item }: { item: { code: string; label: string; flag: string } }) => {
+    const isActive = item.code === lang;
+    return (
+      <TouchableOpacity
+        style={[styles.langOption, isActive && styles.langOptionActive]}
+        onPress={() => { changeLang(item.code); setShowLangModal(false); }}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.langFlag}>{item.flag}</Text>
+        <Text style={[styles.langOptionText, isActive && styles.langOptionTextActive]}>
+          {item.label}
+        </Text>
+        {isActive && <Text style={styles.langCheck}>✓</Text>}
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <ScrollView style={styles.container}>
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.salut}>{salut} 👋</Text>
-        <Text style={styles.data}>
-          {new Date().toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' })}
+      <Animated.View style={{ opacity: fadeAnim }}>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.salut}>{salut} 👋</Text>
+            <Text style={styles.data}>
+              {new Date().toLocaleDateString(getLocale(), { weekday: 'long', day: 'numeric', month: 'long' })}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => setShowLangModal(true)} style={styles.langBtn}>
+            <Text style={styles.langBtnText}>🌐</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.cardPrincipal, { borderColor: scoreColor }]}>
+          <Text style={styles.emoji}>{scoreEmoji}</Text>
+          <AnimatedScore target={score} color="#ffffff" />
+          <Text style={styles.scorLabel}>{t.score}</Text>
+          <Text style={[styles.label, { color: scoreColor }]}>{getLabel()}</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitlu}>🧠 {t.whatItMeans}</Text>
+          <Text style={styles.cardText}>{getInsight()}</Text>
+        </View>
+
+        <View style={[styles.card, styles.cardActiune]}>
+          <Text style={styles.cardTitlu}>⚡ {t.actionOfDay}</Text>
+          <Text style={styles.cardText}>{getAction()}</Text>
+        </View>
+
+        <View style={styles.metriciContainer}>
+          <View style={styles.metrica}>
+            <Text style={styles.metricaEmoji}>😴</Text>
+            <Text style={styles.metricaValoare}>{todayInputs.sleepHours}h</Text>
+            <Text style={styles.metricaLabel}>{t.sleep}</Text>
+          </View>
+          <View style={styles.metrica}>
+            <Text style={styles.metricaEmoji}>✨</Text>
+            <Text style={styles.metricaValoare}>{todayInputs.sleepQuality}/5</Text>
+            <Text style={styles.metricaLabel}>{t.quality}</Text>
+          </View>
+          <View style={styles.metrica}>
+            <Text style={styles.metricaEmoji}>⚡</Text>
+            <Text style={styles.metricaValoare}>{todayInputs.energy}/10</Text>
+            <Text style={styles.metricaLabel}>{t.energy}</Text>
+          </View>
+        </View>
+
+        <Text style={styles.footer}>
+          {t.updatedAt} {new Date().toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' })}
         </Text>
-      </View>
+      </Animated.View>
 
-      {/* Card principal — Body Weather */}
-      <View style={styles.cardPrincipal}>
-        <Text style={styles.emoji}>{emoji}</Text>
-        <Text style={styles.scor}>{score}</Text>
-        <Text style={styles.scorLabel}>din 100</Text>
-        <Text style={styles.label}>{label}</Text>
-      </View>
-
-      {/* Insight */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitlu}>🧠 Ce înseamnă asta</Text>
-        <Text style={styles.cardText}>{insight}</Text>
-      </View>
-
-      {/* Acțiune */}
-      <View style={[styles.card, styles.cardActiune]}>
-        <Text style={styles.cardTitlu}>⚡ Acțiunea zilei</Text>
-        <Text style={styles.cardText}>{action}</Text>
-      </View>
-
-      {/* Metrici */}
-      <View style={styles.metriciContainer}>
-        <View style={styles.metrica}>
-          <Text style={styles.metricaEmoji}>😴</Text>
-          <Text style={styles.metricaValoare}>7.2h</Text>
-          <Text style={styles.metricaLabel}>Somn</Text>
-        </View>
-        <View style={styles.metrica}>
-          <Text style={styles.metricaEmoji}>❤️</Text>
-          <Text style={styles.metricaValoare}>58ms</Text>
-          <Text style={styles.metricaLabel}>HRV</Text>
-        </View>
-        <View style={styles.metrica}>
-          <Text style={styles.metricaEmoji}>🚶</Text>
-          <Text style={styles.metricaValoare}>6,240</Text>
-          <Text style={styles.metricaLabel}>Pași</Text>
-        </View>
-      </View>
-
-      {/* Footer */}
-      <Text style={styles.footer}>Actualizat azi la {new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' })}</Text>
-
+      <Modal visible={showLangModal} transparent animationType="slide" onRequestClose={() => setShowLangModal(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowLangModal(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <View style={styles.handleBar} />
+            <Text style={styles.modalTitle}>🌐 {t.changeLanguage}</Text>
+            <FlatList
+              data={AVAILABLE_LANGUAGES}
+              keyExtractor={(item) => item.code}
+              renderItem={renderLangItem}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.langList}
+            />
+            <TouchableOpacity style={styles.closeBtn} onPress={() => setShowLangModal(false)} activeOpacity={0.8}>
+              <Text style={styles.closeBtnText}>✕</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0a0a0a',
-    padding: 20,
-  },
-  header: {
-    marginTop: 60,
-    marginBottom: 24,
-  },
-  salut: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  data: {
-    fontSize: 14,
-    color: '#888888',
-    marginTop: 4,
-    textTransform: 'capitalize',
-  },
-  cardPrincipal: {
-    backgroundColor: '#1a1a2e',
-    borderRadius: 24,
-    padding: 32,
-    alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#2a2a4a',
-  },
-  emoji: {
-    fontSize: 64,
-    marginBottom: 8,
-  },
-  scor: {
-    fontSize: 72,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    lineHeight: 80,
-  },
-  scorLabel: {
-    fontSize: 14,
-    color: '#888888',
-    marginBottom: 8,
-  },
-  label: {
-    fontSize: 20,
-    color: '#a78bfa',
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#2a2a2a',
-  },
-  cardActiune: {
-    borderColor: '#a78bfa',
-    backgroundColor: '#1a1a2e',
-  },
-  cardTitlu: {
-    fontSize: 13,
-    color: '#888888',
-    marginBottom: 8,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  cardText: {
-    fontSize: 16,
-    color: '#ffffff',
-    lineHeight: 24,
-  },
-  metriciContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  metrica: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    flex: 1,
-    marginHorizontal: 4,
-    borderWidth: 1,
-    borderColor: '#2a2a2a',
-  },
-  metricaEmoji: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
-  metricaValoare: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  metricaLabel: {
-    fontSize: 12,
-    color: '#888888',
-    marginTop: 2,
-  },
-  footer: {
-    textAlign: 'center',
-    color: '#444444',
-    fontSize: 12,
-    marginTop: 8,
-    marginBottom: 40,
-  },
+  container: { flex: 1, backgroundColor: '#0a0a0a', padding: 20 },
+  header: { marginTop: 60, marginBottom: 24, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  headerLeft: { flex: 1 },
+  salut: { fontSize: 28, fontWeight: 'bold', color: '#ffffff' },
+  data: { fontSize: 14, color: '#888888', marginTop: 4, textTransform: 'capitalize' },
+  langBtn: { padding: 8, marginTop: 4 },
+  langBtnText: { fontSize: 24 },
+  cardPrincipal: { backgroundColor: '#1a1a2e', borderRadius: 24, padding: 32, alignItems: 'center', marginBottom: 16, borderWidth: 2 },
+  emoji: { fontSize: 64, marginBottom: 8 },
+  scor: { fontSize: 72, fontWeight: 'bold', lineHeight: 80 },
+  scorLabel: { fontSize: 14, color: '#888888', marginBottom: 8 },
+  label: { fontSize: 20, fontWeight: '600' },
+  card: { backgroundColor: '#1a1a1a', borderRadius: 16, padding: 20, marginBottom: 12, borderWidth: 1, borderColor: '#2a2a2a' },
+  cardActiune: { borderColor: '#a78bfa', backgroundColor: '#1a1a2e' },
+  cardTitlu: { fontSize: 13, color: '#888888', marginBottom: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1 },
+  cardText: { fontSize: 16, color: '#ffffff', lineHeight: 24 },
+  metriciContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
+  metrica: { backgroundColor: '#1a1a1a', borderRadius: 16, padding: 16, alignItems: 'center', flex: 1, marginHorizontal: 4, borderWidth: 1, borderColor: '#2a2a2a' },
+  metricaEmoji: { fontSize: 24, marginBottom: 4 },
+  metricaValoare: { fontSize: 18, fontWeight: 'bold', color: '#ffffff' },
+  metricaLabel: { fontSize: 12, color: '#888888', marginTop: 2 },
+  footer: { textAlign: 'center', color: '#444444', fontSize: 12, marginTop: 8, marginBottom: 40 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  modalSheet: { backgroundColor: '#1a1a2e', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: 20, paddingBottom: Platform.OS === 'ios' ? 36 : 24, maxHeight: '75%' },
+  handleBar: { width: 44, height: 4, borderRadius: 2, backgroundColor: '#444', alignSelf: 'center', marginTop: 12, marginBottom: 4 },
+  modalTitle: { fontSize: 17, fontWeight: '700', color: '#e0e0f0', textAlign: 'center', marginVertical: 16 },
+  langList: { paddingBottom: 8 },
+  langFlag: { fontSize: 22, marginRight: 12 },
+  langOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, paddingHorizontal: 16, borderRadius: 14, backgroundColor: '#0f0f1e', marginBottom: 8 },
+  langOptionActive: { backgroundColor: '#2d1f7a' },
+  langOptionText: { flex: 1, fontSize: 15, color: '#ccc', fontWeight: '500' },
+  langOptionTextActive: { color: '#fff', fontWeight: '700' },
+  langCheck: { fontSize: 15, color: '#6C63FF', fontWeight: '700' },
+  closeBtn: { marginTop: 4, paddingVertical: 14, borderRadius: 14, backgroundColor: '#0f0f1e', alignItems: 'center' },
+  closeBtnText: { color: '#888', fontSize: 16, fontWeight: '600' },
 });
