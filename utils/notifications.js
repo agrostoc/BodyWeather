@@ -43,9 +43,9 @@ export async function scheduleDailyReminder(lang = 'ro') {
       sound: true,
     },
     trigger: {
-      hour: 21,
-      minute: 0,
-      repeats: true,
+  type: 'daily',
+  hour: 21,
+  minute: 0,
     },
   });
 
