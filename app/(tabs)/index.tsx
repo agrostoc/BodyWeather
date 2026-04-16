@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, FlatList, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useBodyDataContext } from '../../contexts/BodyDataContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -31,9 +31,8 @@ function AnimatedScore({ target, color }: { target: number; color: string }) {
 }
 
 export default function HomeScreen() {
-  const { liveScore, todayInputs } = useBodyDataContext();
-  const { t, lang, changeLang, AVAILABLE_LANGUAGES } = useLanguage();
-  const [showLangModal, setShowLangModal] = useState(false);
+  const { liveScore, todayInputs, streak, history } = useBodyDataContext();
+  const { t, lang } = useLanguage();
 
   const score = liveScore.total;
   const scoreColor = liveScore.color || '#a78bfa';
@@ -141,6 +140,20 @@ export default function HomeScreen() {
     return '😴 Go to bed 1 hour earlier tonight.';
   };
 
+  const hasTodayEntry = history.some(
+    (e: { date: string }) => e.date === new Date().toISOString().split('T')[0]
+  );
+
+  const getStreakMotivation = () => {
+    if (streak >= 30) return t.streakMotivation30;
+    if (streak >= 14) return t.streakMotivation14;
+    if (streak >= 7) return t.streakMotivation7;
+    if (streak >= 3) return t.streakMotivation3;
+    return t.streakMotivation1;
+  };
+
+  const streakFireEmoji = streak >= 30 ? '🏆' : streak >= 14 ? '🔥🔥' : streak >= 7 ? '🔥' : '✨';
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -150,36 +163,14 @@ export default function HomeScreen() {
     }).start();
   }, []);
 
-  const renderLangItem = ({ item }: { item: { code: string; label: string; flag: string } }) => {
-    const isActive = item.code === lang;
-    return (
-      <TouchableOpacity
-        style={[styles.langOption, isActive && styles.langOptionActive]}
-        onPress={() => { changeLang(item.code); setShowLangModal(false); }}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.langFlag}>{item.flag}</Text>
-        <Text style={[styles.langOptionText, isActive && styles.langOptionTextActive]}>
-          {item.label}
-        </Text>
-        {isActive && <Text style={styles.langCheck}>✓</Text>}
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <ScrollView style={styles.container}>
       <Animated.View style={{ opacity: fadeAnim }}>
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.salut}>{salut} 👋</Text>
-            <Text style={styles.data}>
-              {new Date().toLocaleDateString(getLocale(), { weekday: 'long', day: 'numeric', month: 'long' })}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => setShowLangModal(true)} style={styles.langBtn}>
-            <Text style={styles.langBtnText}>🌐</Text>
-          </TouchableOpacity>
+          <Text style={styles.salut}>{salut} 👋</Text>
+          <Text style={styles.data}>
+            {new Date().toLocaleDateString(getLocale(), { weekday: 'long', day: 'numeric', month: 'long' })}
+          </Text>
         </View>
 
         <View style={[styles.cardPrincipal, { borderColor: scoreColor }]}>
@@ -188,6 +179,19 @@ export default function HomeScreen() {
           <Text style={styles.scorLabel}>{t.score}</Text>
           <Text style={[styles.label, { color: scoreColor }]}>{getLabel()}</Text>
         </View>
+
+        {hasTodayEntry && (
+          <View style={styles.streakCard}>
+            <Text style={styles.streakFire}>{streakFireEmoji}</Text>
+            <View style={styles.streakInfo}>
+              <Text style={styles.streakNumber}>{streak}</Text>
+              <Text style={styles.streakLabel}>
+                {streak === 1 ? t.streakDay : t.streakDays}
+              </Text>
+            </View>
+            <Text style={styles.streakMotivation}>{getStreakMotivation()}</Text>
+          </View>
+        )}
 
         <View style={styles.card}>
           <Text style={styles.cardTitlu}>🧠 {t.whatItMeans}</Text>
@@ -222,41 +226,26 @@ export default function HomeScreen() {
         </Text>
       </Animated.View>
 
-      <Modal visible={showLangModal} transparent animationType="slide" onRequestClose={() => setShowLangModal(false)}>
-        <Pressable style={styles.modalOverlay} onPress={() => setShowLangModal(false)}>
-          <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <View style={styles.handleBar} />
-            <Text style={styles.modalTitle}>🌐 {t.changeLanguage}</Text>
-            <FlatList
-              data={AVAILABLE_LANGUAGES}
-              keyExtractor={(item) => item.code}
-              renderItem={renderLangItem}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.langList}
-            />
-            <TouchableOpacity style={styles.closeBtn} onPress={() => setShowLangModal(false)} activeOpacity={0.8}>
-              <Text style={styles.closeBtnText}>✕</Text>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0a0a0a', padding: 20 },
-  header: { marginTop: 60, marginBottom: 24, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  headerLeft: { flex: 1 },
+  header: { marginTop: 60, marginBottom: 24 },
   salut: { fontSize: 28, fontWeight: 'bold', color: '#ffffff' },
   data: { fontSize: 14, color: '#888888', marginTop: 4, textTransform: 'capitalize' },
-  langBtn: { padding: 8, marginTop: 4 },
-  langBtnText: { fontSize: 24 },
   cardPrincipal: { backgroundColor: '#1a1a2e', borderRadius: 24, padding: 32, alignItems: 'center', marginBottom: 16, borderWidth: 2 },
   emoji: { fontSize: 64, marginBottom: 8 },
   scor: { fontSize: 72, fontWeight: 'bold', lineHeight: 80 },
   scorLabel: { fontSize: 14, color: '#888888', marginBottom: 8 },
   label: { fontSize: 20, fontWeight: '600' },
+  streakCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1a1a2e', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#ff8c00' },
+  streakFire: { fontSize: 28, marginRight: 12 },
+  streakInfo: { alignItems: 'center', marginRight: 12 },
+  streakNumber: { fontSize: 28, fontWeight: 'bold', color: '#ff8c00' },
+  streakLabel: { fontSize: 11, color: '#888888', marginTop: 2 },
+  streakMotivation: { flex: 1, fontSize: 14, color: '#cccccc', lineHeight: 20 },
   card: { backgroundColor: '#1a1a1a', borderRadius: 16, padding: 20, marginBottom: 12, borderWidth: 1, borderColor: '#2a2a2a' },
   cardActiune: { borderColor: '#a78bfa', backgroundColor: '#1a1a2e' },
   cardTitlu: { fontSize: 13, color: '#888888', marginBottom: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1 },
@@ -267,17 +256,4 @@ const styles = StyleSheet.create({
   metricaValoare: { fontSize: 18, fontWeight: 'bold', color: '#ffffff' },
   metricaLabel: { fontSize: 12, color: '#888888', marginTop: 2 },
   footer: { textAlign: 'center', color: '#444444', fontSize: 12, marginTop: 8, marginBottom: 40 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  modalSheet: { backgroundColor: '#1a1a2e', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: 20, paddingBottom: Platform.OS === 'ios' ? 36 : 24, maxHeight: '75%' },
-  handleBar: { width: 44, height: 4, borderRadius: 2, backgroundColor: '#444', alignSelf: 'center', marginTop: 12, marginBottom: 4 },
-  modalTitle: { fontSize: 17, fontWeight: '700', color: '#e0e0f0', textAlign: 'center', marginVertical: 16 },
-  langList: { paddingBottom: 8 },
-  langFlag: { fontSize: 22, marginRight: 12 },
-  langOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, paddingHorizontal: 16, borderRadius: 14, backgroundColor: '#0f0f1e', marginBottom: 8 },
-  langOptionActive: { backgroundColor: '#2d1f7a' },
-  langOptionText: { flex: 1, fontSize: 15, color: '#ccc', fontWeight: '500' },
-  langOptionTextActive: { color: '#fff', fontWeight: '700' },
-  langCheck: { fontSize: 15, color: '#6C63FF', fontWeight: '700' },
-  closeBtn: { marginTop: 4, paddingVertical: 14, borderRadius: 14, backgroundColor: '#0f0f1e', alignItems: 'center' },
-  closeBtnText: { color: '#888', fontSize: 16, fontWeight: '600' },
 });

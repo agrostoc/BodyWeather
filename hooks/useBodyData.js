@@ -64,6 +64,8 @@ export function useBodyData() {
     streakDays: computeStreak(history, todayDateKey()),
   });
 
+  const streak = computeStreak(history, todayDateKey());
+
   return {
     todayInputs,
     setTodayInputs,
@@ -71,6 +73,7 @@ export function useBodyData() {
     saveToday,
     history,
     loading,
+    streak,
   };
 }
 
