@@ -27,8 +27,8 @@ const REMINDER_MESSAGES = {
   zh: '您记录今天了吗？只需30秒！',
 };
 
-// Programează reminder zilnic la ora 21:00
-export async function scheduleDailyReminder(lang = 'ro') {
+// Programează reminder zilnic la ora specificată (default 21:00)
+export async function scheduleDailyReminder(lang = 'ro', hour = 21) {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   const granted = await requestPermissions();
@@ -43,9 +43,9 @@ export async function scheduleDailyReminder(lang = 'ro') {
       sound: true,
     },
     trigger: {
-  type: 'daily',
-  hour: 21,
-  minute: 0,
+      type: 'daily',
+      hour,
+      minute: 0,
     },
   });
 

@@ -1,41 +1,82 @@
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useBodyDataContext } from '../contexts/BodyDataContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function HistoryScreen() {
   const { history } = useBodyDataContext();
   const { t, lang } = useLanguage();
-  const last7 = getLast7Days(history, lang);
+  const [period, setPeriod] = useState(7);
+  const days = getLastNDays(history, lang, period);
   const maxScore = 100;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{t.evolution}</Text>
-      <View style={styles.chartCard}>
-        <View style={styles.chart}>
-          {last7.map((day, i) => {
-            const height = day.score ? (day.score / maxScore) * 140 : 4;
-            const color = getColor(day.score);
-            return (
-              <View key={i} style={styles.barWrapper}>
-                <Text style={styles.barScore}>{day.score > 0 ? day.score : ''}</Text>
-                <View style={styles.barBackground}>
-                  <View style={[styles.barFill, { height, backgroundColor: color }]} />
-                </View>
-                <Text style={styles.barDay}>{day.dayLabel}</Text>
-                <Text style={styles.barEmoji}>{day.score > 0 ? getEmoji(day.score) : '·'}</Text>
-              </View>
-            );
-          })}
-        </View>
+      <Text style={styles.title}>{period === 7 ? t.evolution : t.evolution30}</Text>
+
+      {/* Period toggle */}
+      <View style={styles.toggleRow}>
+        <TouchableOpacity
+          style={[styles.toggleBtn, period === 7 && styles.toggleBtnActive]}
+          onPress={() => setPeriod(7)}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.toggleText, period === 7 && styles.toggleTextActive]}>7 {t.toggleDays}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.toggleBtn, period === 30 && styles.toggleBtnActive]}
+          onPress={() => setPeriod(30)}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.toggleText, period === 30 && styles.toggleTextActive]}>30 {t.toggleDays}</Text>
+        </TouchableOpacity>
       </View>
+
+      {period === 7 ? (
+        /* 7-day bar chart */
+        <View style={styles.chartCard}>
+          <View style={styles.chart}>
+            {days.map((day, i) => {
+              const height = day.score ? (day.score / maxScore) * 140 : 4;
+              const color = getColor(day.score);
+              return (
+                <View key={i} style={styles.barWrapper}>
+                  <Text style={styles.barScore}>{day.score > 0 ? day.score : ''}</Text>
+                  <View style={styles.barBackground}>
+                    <View style={[styles.barFill, { height, backgroundColor: color }]} />
+                  </View>
+                  <Text style={styles.barDay}>{day.dayLabel}</Text>
+                  <Text style={styles.barEmoji}>{day.score > 0 ? getEmoji(day.score) : '·'}</Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      ) : (
+        /* 30-day calendar grid */
+        <View style={styles.chartCard}>
+          <View style={styles.calendarGrid}>
+            {days.map((day, i) => {
+              const color = day.score > 0 ? getColor(day.score) : '#1a1a2e';
+              const borderColor = day.isToday ? '#a78bfa' : 'transparent';
+              return (
+                <View key={i} style={[styles.calendarCell, { backgroundColor: color, borderColor }]}>
+                  <Text style={styles.calendarDay}>{day.dayNum}</Text>
+                  {day.score > 0 && <Text style={styles.calendarScore}>{day.score}</Text>}
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      )}
+
       <View style={styles.statsRow}>
-        <StatCard label={t.average} value={getAverage(last7)} emoji="📊" />
-        <StatCard label={t.maximum} value={getMax(last7)} emoji="🏆" />
-        <StatCard label={t.daysLogged} value={getDaysLogged(last7)} emoji="🔥" />
+        <StatCard label={t.average} value={getAverage(days)} emoji="📊" />
+        <StatCard label={t.maximum} value={getMax(days)} emoji="🏆" />
+        <StatCard label={t.daysLogged} value={getDaysLogged(days, period)} emoji="🔥" />
       </View>
       <Text style={styles.sectionTitle}>{t.detailedHistory}</Text>
-      {last7.filter(d => d.score > 0).reverse().map((day, i) => (
+      {days.filter(d => d.score > 0).reverse().map((day, i) => (
         <View key={i} style={styles.historyRow}>
           <Text style={styles.historyEmoji}>{getEmoji(day.score)}</Text>
           <View style={styles.historyInfo}>
@@ -52,7 +93,7 @@ export default function HistoryScreen() {
           </Text>
         </View>
       ))}
-      {last7.filter(d => d.score > 0).length === 0 && (
+      {days.filter(d => d.score > 0).length === 0 && (
         <View style={styles.emptyCard}>
           <Text style={styles.emptyText}>{t.noEntries}</Text>
         </View>
@@ -102,13 +143,13 @@ function getShortDayNames(lang) {
   return names[lang] || names['en'];
 }
 
-function getLast7Days(history, lang) {
+function getLastNDays(history, lang, n = 7) {
   const days = [];
   const dayNames = getShortDayNames(lang);
   const todayLabel = getTodayLabel(lang);
   const locale = getLocale(lang);
 
-  for (let i = 6; i >= 0; i--) {
+  for (let i = n - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const key = d.toISOString().split('T')[0];
@@ -116,6 +157,8 @@ function getLast7Days(history, lang) {
     days.push({
       date: key,
       dayLabel: i === 0 ? todayLabel : dayNames[d.getDay()],
+      dayNum: d.getDate(),
+      isToday: i === 0,
       fullLabel: d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'short' }),
       score:        entry ? entry.score.total : 0,
       sleepHours:   entry ? entry.inputs.sleepHours : '-',
@@ -157,15 +200,24 @@ function getMax(days) {
   return Math.max(...logged.map(d => d.score));
 }
 
-function getDaysLogged(days) {
-  return days.filter(d => d.score > 0).length + '/7';
+function getDaysLogged(days, total) {
+  return days.filter(d => d.score > 0).length + '/' + total;
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#12121f' },
   content: { padding: 20, paddingTop: Platform.OS === 'ios' ? 60 : 30 },
-  title: { fontSize: 22, fontWeight: '700', color: '#e0e0f0', marginBottom: 20 },
+  title: { fontSize: 22, fontWeight: '700', color: '#e0e0f0', marginBottom: 16 },
+  toggleRow: { flexDirection: 'row', marginBottom: 16, backgroundColor: '#0f0f1e', borderRadius: 12, padding: 3 },
+  toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
+  toggleBtnActive: { backgroundColor: '#2d1f7a' },
+  toggleText: { fontSize: 14, fontWeight: '600', color: '#666' },
+  toggleTextActive: { color: '#fff' },
   chartCard: { backgroundColor: '#1a1a2e', borderRadius: 16, padding: 20, marginBottom: 16 },
+  calendarGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', gap: 6 },
+  calendarCell: { width: 42, height: 42, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 2 },
+  calendarDay: { fontSize: 10, color: '#888', fontWeight: '600' },
+  calendarScore: { fontSize: 11, color: '#fff', fontWeight: '700' },
   chart: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 180 },
   barWrapper: { alignItems: 'center', flex: 1 },
   barScore: { fontSize: 10, color: '#888', marginBottom: 4, fontWeight: '600' },
