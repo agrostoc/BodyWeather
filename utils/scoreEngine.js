@@ -75,9 +75,9 @@ export function calculateScore({
 }
 
 function getLabel(score) {
-  if (score >= 85) return { label: 'Excelent', emoji: '⚡', color: '#00C896' };
-  if (score >= 70) return { label: 'Bine',     emoji: '🌤', color: '#4CAF50' };
-  if (score >= 55) return { label: 'Ok',       emoji: '🌥', color: '#FFC107' };
-  if (score >= 40) return { label: 'Obosit',   emoji: '🌧', color: '#FF9800' };
-  return                  { label: 'Epuizat',  emoji: '⛈',  color: '#F44336' };
+  if (score >= 85) return { labelKey: 'excellent', emoji: '⚡', color: '#00C896' };
+  if (score >= 70) return { labelKey: 'good',      emoji: '🌤', color: '#4CAF50' };
+  if (score >= 55) return { labelKey: 'moderate',   emoji: '🌥', color: '#FFC107' };
+  if (score >= 40) return { labelKey: 'difficult',  emoji: '🌧', color: '#FF9800' };
+  return                  { labelKey: 'difficult',  emoji: '⛈',  color: '#F44336' };
 }
