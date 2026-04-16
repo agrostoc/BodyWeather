@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useBodyDataContext } from '../../contexts/BodyDataContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -141,6 +141,20 @@ export default function HomeScreen() {
     return '😴 Go to bed 1 hour earlier tonight.';
   };
 
+  const handleShare = async () => {
+    const date = new Date().toLocaleDateString(getLocale(), { weekday: 'long', day: 'numeric', month: 'long' });
+    const message = `${scoreEmoji} ${score}/100 — ${getLabel()}\n\n` +
+      `😴 ${t.sleep}: ${todayInputs.sleepHours}h\n` +
+      `✨ ${t.quality}: ${todayInputs.sleepQuality}/5\n` +
+      `⚡ ${t.energy}: ${todayInputs.energy}/10\n\n` +
+      `📅 ${date}\n` +
+      (streak > 1 ? `🔥 ${streak} ${t.streakDays}\n\n` : '\n') +
+      `— BodyWeather\nhttps://bodyweather.app`;
+    try {
+      await Share.share({ message });
+    } catch (_) {}
+  };
+
   const hasTodayEntry = history.some(
     (e: { date: string }) => e.date === new Date().toISOString().split('T')[0]
   );
@@ -179,6 +193,9 @@ export default function HomeScreen() {
           <AnimatedScore target={score} color="#ffffff" />
           <Text style={styles.scorLabel}>{t.score}</Text>
           <Text style={[styles.label, { color: scoreColor }]}>{getLabel()}</Text>
+          <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
+            <Text style={styles.shareBtnText}>{t.shareScore}</Text>
+          </TouchableOpacity>
         </View>
 
         {hasTodayEntry && (
@@ -241,6 +258,8 @@ const styles = StyleSheet.create({
   scor: { fontSize: 72, fontWeight: 'bold', lineHeight: 80 },
   scorLabel: { fontSize: 14, color: '#888888', marginBottom: 8 },
   label: { fontSize: 20, fontWeight: '600' },
+  shareBtn: { marginTop: 16, paddingVertical: 10, paddingHorizontal: 24, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.1)' },
+  shareBtnText: { fontSize: 14, color: '#a78bfa', fontWeight: '600' },
   streakCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1a1a2e', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#ff8c00' },
   streakFire: { fontSize: 28, marginRight: 12 },
   streakInfo: { alignItems: 'center', marginRight: 12 },
