@@ -74,7 +74,7 @@ export default function ManualInputScreen() {
       <View style={[styles.scoreCard, { borderColor: scoreColor }]}>
         <Text style={styles.scoreEmoji}>{liveScore.emoji}</Text>
         <Text style={[styles.scoreNumber, { color: scoreColor }]}>{liveScore.total}</Text>
-        <Text style={[styles.scoreLabel, { color: scoreColor }]}>{liveScore.label}</Text>
+        <Text style={[styles.scoreLabel, { color: scoreColor }]}>{t[liveScore.labelKey] || liveScore.labelKey}</Text>
         <Text style={styles.scoreDate}>
           {new Date().toLocaleDateString(getLocale(), { weekday: 'long', day: 'numeric', month: 'long' })}
         </Text>
