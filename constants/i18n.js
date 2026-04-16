@@ -27,6 +27,7 @@ export const translations = {
     whatItMeans: 'Ce înseamnă',
     actionOfDay: 'Acțiunea zilei',
 
+    shareScore: '📤 Distribuie scorul',
     updatedAt: 'Actualizat la',
     changeLanguage: 'Schimbă limba',
     selectLanguage: 'Selectează limba',
@@ -163,6 +164,7 @@ export const translations = {
     whatItMeans: 'What it means',
     actionOfDay: 'Action of the day',
 
+    shareScore: '📤 Share score',
     updatedAt: 'Updated at',
     changeLanguage: 'Change Language',
     selectLanguage: 'Select Language',
@@ -288,6 +290,7 @@ export const translations = {
     whatItMeans: 'Ce que ça signifie',
     actionOfDay: 'Action du jour',
 
+    shareScore: '📤 Partager le score',
     updatedAt: 'Mis à jour à',
     changeLanguage: 'Changer de langue',
     selectLanguage: 'Sélectionner la langue',
@@ -413,6 +416,7 @@ export const translations = {
     whatItMeans: 'Was das bedeutet',
     actionOfDay: 'Aktion des Tages',
 
+    shareScore: '📤 Score teilen',
     updatedAt: 'Aktualisiert um',
     changeLanguage: 'Sprache ändern',
     selectLanguage: 'Sprache wählen',
@@ -538,6 +542,7 @@ export const translations = {
     whatItMeans: 'Qué significa',
     actionOfDay: 'Acción del día',
 
+    shareScore: '📤 Compartir puntuación',
     updatedAt: 'Actualizado a las',
     changeLanguage: 'Cambiar idioma',
     selectLanguage: 'Seleccionar idioma',
@@ -663,6 +668,7 @@ export const translations = {
     whatItMeans: 'Cosa significa',
     actionOfDay: 'Azione del giorno',
 
+    shareScore: '📤 Condividi punteggio',
     updatedAt: 'Aggiornato alle',
     changeLanguage: 'Cambia lingua',
     selectLanguage: 'Seleziona lingua',
@@ -788,6 +794,7 @@ export const translations = {
     whatItMeans: 'O que significa',
     actionOfDay: 'Ação do dia',
 
+    shareScore: '📤 Partilhar pontuação',
     updatedAt: 'Atualizado às',
     changeLanguage: 'Mudar idioma',
     selectLanguage: 'Selecionar idioma',
@@ -913,6 +920,7 @@ export const translations = {
     whatItMeans: '这意味着什么',
     actionOfDay: '今日行动',
 
+    shareScore: '📤 分享评分',
     updatedAt: '更新于',
     changeLanguage: '更改语言',
     selectLanguage: '选择语言',
