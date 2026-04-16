@@ -15,6 +15,7 @@ export const translations = {
     good: 'Bine',
     moderate: 'Moderat',
     difficult: 'Dificil',
+    exhausted: 'Epuizat',
 
     sleep: 'Somn',
     quality: 'Calitate',
@@ -150,6 +151,7 @@ export const translations = {
     good: 'Good',
     moderate: 'Moderate',
     difficult: 'Difficult',
+    exhausted: 'Exhausted',
 
     sleep: 'Sleep',
     quality: 'Quality',
@@ -274,6 +276,7 @@ export const translations = {
     good: 'Bien',
     moderate: 'Modéré',
     difficult: 'Difficile',
+    exhausted: 'Épuisé',
 
     sleep: 'Sommeil',
     quality: 'Qualité',
@@ -398,6 +401,7 @@ export const translations = {
     good: 'Gut',
     moderate: 'Mäßig',
     difficult: 'Schwierig',
+    exhausted: 'Erschöpft',
 
     sleep: 'Schlaf',
     quality: 'Qualität',
@@ -522,6 +526,7 @@ export const translations = {
     good: 'Bien',
     moderate: 'Moderado',
     difficult: 'Difícil',
+    exhausted: 'Agotado',
 
     sleep: 'Sueño',
     quality: 'Calidad',
@@ -646,6 +651,7 @@ export const translations = {
     good: 'Buono',
     moderate: 'Moderato',
     difficult: 'Difficile',
+    exhausted: 'Esausto',
 
     sleep: 'Sonno',
     quality: 'Qualità',
@@ -770,6 +776,7 @@ export const translations = {
     good: 'Bom',
     moderate: 'Moderado',
     difficult: 'Difícil',
+    exhausted: 'Esgotado',
 
     sleep: 'Sono',
     quality: 'Qualidade',
@@ -894,6 +901,7 @@ export const translations = {
     good: '良好',
     moderate: '一般',
     difficult: '较差',
+    exhausted: '精疲力竭',
 
     sleep: '睡眠',
     quality: '质量',

@@ -79,5 +79,5 @@ function getLabel(score) {
   if (score >= 70) return { labelKey: 'good',      emoji: '🌤', color: '#4CAF50' };
   if (score >= 55) return { labelKey: 'moderate',   emoji: '🌥', color: '#FFC107' };
   if (score >= 40) return { labelKey: 'difficult',  emoji: '🌧', color: '#FF9800' };
-  return                  { labelKey: 'difficult',  emoji: '⛈',  color: '#F44336' };
+  return                  { labelKey: 'exhausted',  emoji: '⛈',  color: '#F44336' };
 }

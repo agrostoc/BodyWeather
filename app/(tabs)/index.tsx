@@ -52,10 +52,11 @@ export default function HomeScreen() {
   };
 
   const getLabel = () => {
-    if (score >= 80) return t.excellent;
-    if (score >= 60) return t.good;
-    if (score >= 40) return t.moderate;
-    return t.difficult;
+    if (score >= 85) return t.excellent;
+    if (score >= 70) return t.good;
+    if (score >= 55) return t.moderate;
+    if (score >= 40) return t.difficult;
+    return t.exhausted;
   };
 
   const getInsight = () => {
