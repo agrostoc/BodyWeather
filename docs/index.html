@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BodyWeather — Know how your body feels</title>
+  <meta name="description" content="Track your daily wellness with a simple score. Sleep, energy, hydration, stress — 30 seconds a day.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+
+    .hero { text-align: center; padding: 80px 24px 40px; max-width: 600px; margin: 0 auto; }
+    .hero-emoji { font-size: 72px; margin-bottom: 16px; }
+    .hero h1 { font-size: 40px; font-weight: 800; margin-bottom: 12px; }
+    .hero h1 span { color: #a78bfa; }
+    .hero p { font-size: 18px; color: #999; line-height: 1.6; margin-bottom: 32px; }
+
+    .badge { display: inline-block; }
+    .badge img { height: 54px; border-radius: 12px; }
+
+    .features { max-width: 600px; margin: 40px auto; padding: 0 24px; }
+    .feature { background: #1a1a2e; border-radius: 16px; padding: 24px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; }
+    .feature-emoji { font-size: 32px; flex-shrink: 0; }
+    .feature h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .feature p { font-size: 14px; color: #888; line-height: 1.5; }
+
+    .score-demo { text-align: center; margin: 48px auto; }
+    .score-demo .number { font-size: 80px; font-weight: 800; color: #4CAF50; }
+    .score-demo .label { font-size: 20px; color: #4CAF50; font-weight: 600; }
+    .score-demo .sublabel { font-size: 14px; color: #666; margin-top: 8px; }
+
+    .languages { text-align: center; padding: 40px 24px; }
+    .languages h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+    .flags { font-size: 32px; letter-spacing: 8px; }
+
+    footer { text-align: center; padding: 40px 24px; border-top: 1px solid #1a1a2e; margin-top: 40px; }
+    footer a { color: #a78bfa; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    footer p { color: #555; font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <a href="https://apps.apple.com/app/bodyweather/id6761437408" target="_blank" style="text-decoration:none;"><img src="icon.png" alt="BodyWeather" style="width:100px;height:100px;border-radius:22px;"></a>
+    <h1>Body<span>Weather</span></h1>
+    <p>Understand how your body feels every day. Track sleep, energy, hydration and stress in 30 seconds and get a daily wellness score.</p>
+    <a class="badge" href="https://apps.apple.com/app/bodyweather/id6761437408" target="_blank">
+      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+    </a>
+  </div>
+
+  <div class="score-demo">
+    <div class="number">77</div>
+    <div class="label">Good</div>
+    <div class="sublabel">Your daily wellness score (0-100)</div>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-emoji">📊</div>
+      <div>
+        <h3>Daily Score</h3>
+        <p>A 0-100 wellness score based on 5 key metrics, calculated with a weighted algorithm.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-emoji">📈</div>
+      <div>
+        <h3>Track Your Progress</h3>
+        <p>7-day and 30-day history with charts, trends and detailed breakdowns.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-emoji">🔥</div>
+      <div>
+        <h3>Streaks</h3>
+        <p>Build a daily habit. Your streak grows every consecutive day you log.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-emoji">💡</div>
+      <div>
+        <h3>Personalized Tips</h3>
+        <p>Actionable advice tailored to your daily score — what to do, when to rest.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-emoji">🔔</div>
+      <div>
+        <h3>Daily Reminders</h3>
+        <p>Customizable push notifications so you never forget to log your day.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-emoji">🔒</div>
+      <div>
+        <h3>100% Private</h3>
+        <p>All data stays on your device. No servers, no accounts, no tracking.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="languages">
+    <h2>Available in 8 languages</h2>
+    <div class="flags">🇷🇴 🇬🇧 🇫🇷 🇩🇪 🇪🇸 🇮🇹 🇵🇹 🇨🇳</div>
+  </div>
+
+  <footer>
+    <a href="privacy.html">Privacy Policy</a>
+    <p>&copy; 2026 BodyWeather. anca.stancut@ecof.ro</p>
+  </footer>
+
+</body>
+</html>
