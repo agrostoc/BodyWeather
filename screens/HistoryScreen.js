@@ -76,23 +76,47 @@ export default function HistoryScreen() {
         <StatCard label={t.daysLogged} value={getDaysLogged(days, period)} emoji="🔥" />
       </View>
       <Text style={styles.sectionTitle}>{t.detailedHistory}</Text>
-      {days.filter(d => d.score > 0).reverse().map((day, i) => (
-        <View key={i} style={styles.historyRow}>
-          <Text style={styles.historyEmoji}>{getEmoji(day.score)}</Text>
-          <View style={styles.historyInfo}>
-            <Text style={styles.historyDate}>{day.fullLabel}</Text>
-            <Text style={styles.historyDetails}>
-              😴 {day.sleepHours}h  ✨ {day.sleepQuality}/5  ⚡ {day.energy}/10
-            </Text>
-            <Text style={styles.historyDetails}>
-              💧 {day.hydration}L  🧠 {t.stress ? t.stress.toLowerCase() : 'stress'} {day.stress}/10
-            </Text>
-          </View>
-          <Text style={[styles.historyScore, { color: getColor(day.score) }]}>
-            {day.score}
-          </Text>
-        </View>
-      ))}
+      {(() => {
+        const locale = getLocale(lang);
+        const logged = days.filter(d => d.score > 0).reverse();
+        const showMonthHeaders = period === 30;
+        let lastMonthKey = null;
+        const rendered = [];
+        logged.forEach((day, i) => {
+          if (showMonthHeaders) {
+            const d = new Date(day.date);
+            const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
+            if (monthKey !== lastMonthKey) {
+              lastMonthKey = monthKey;
+              const monthLabel = d.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+              rendered.push(
+                <Text key={`mh-${monthKey}`} style={styles.monthHeader}>{monthLabel}</Text>
+              );
+            }
+          }
+          rendered.push(
+            <View key={`day-${day.date}-${i}`} style={styles.historyRow}>
+              <Text style={styles.historyEmoji}>{getEmoji(day.score)}</Text>
+              <View style={styles.historyInfo}>
+                <Text style={styles.historyDate}>{day.fullLabel}</Text>
+                <Text style={styles.historyDetails}>
+                  😴 {day.sleepHours}h  ✨ {day.sleepQuality}/5  ⚡ {day.energy}/10
+                </Text>
+                <Text style={styles.historyDetails}>
+                  💧 {day.hydration}L  🧠 {t.stress ? t.stress.toLowerCase() : 'stress'} {day.stress}/10
+                </Text>
+                {day.note ? (
+                  <Text style={styles.historyNote}>"{day.note}"</Text>
+                ) : null}
+              </View>
+              <Text style={[styles.historyScore, { color: getColor(day.score) }]}>
+                {day.score}
+              </Text>
+            </View>
+          );
+        });
+        return rendered;
+      })()}
       {days.filter(d => d.score > 0).length === 0 && (
         <View style={styles.emptyCard}>
           <Text style={styles.emptyText}>{t.noEntries}</Text>
@@ -166,6 +190,7 @@ function getLastNDays(history, lang, n = 7) {
       energy:       entry ? entry.inputs.energy : '-',
       hydration:    entry ? (entry.inputs.hydration || '-') : '-',
       stress:       entry ? (entry.inputs.stress || '-') : '-',
+      note:         entry && typeof entry.note === 'string' ? entry.note : '',
     });
   }
   return days;
@@ -231,12 +256,14 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 22, fontWeight: '800', color: '#e0e0f0' },
   statLabel: { fontSize: 11, color: '#666', marginTop: 2 },
   sectionTitle: { fontSize: 14, fontWeight: '600', color: '#666', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 },
+  monthHeader: { fontSize: 13, fontWeight: '700', color: '#a78bfa', marginTop: 14, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1.2 },
   historyRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1a1a2e', borderRadius: 14, padding: 14, marginBottom: 10 },
   historyEmoji: { fontSize: 28, marginRight: 12 },
   historyInfo: { flex: 1 },
   historyDate: { fontSize: 14, fontWeight: '600', color: '#e0e0f0', textTransform: 'capitalize' },
   historyDetails: { fontSize: 12, color: '#666', marginTop: 3 },
   historyScore: { fontSize: 28, fontWeight: '800' },
+  historyNote: { fontSize: 12, color: '#a78bfa', marginTop: 6, fontStyle: 'italic', lineHeight: 18 },
   emptyCard: { backgroundColor: '#1a1a2e', borderRadius: 14, padding: 30, alignItems: 'center' },
   emptyText: { color: '#666', textAlign: 'center', lineHeight: 24, fontSize: 14 },
 });

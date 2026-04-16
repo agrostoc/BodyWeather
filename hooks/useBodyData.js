@@ -36,11 +36,11 @@ export function useBodyData() {
     })();
   }, []);
 
-  const saveToday = useCallback(async (inputs) => {
+  const saveToday = useCallback(async (inputs, note = '') => {
     const dateKey = todayDateKey();
     const streak  = computeStreak(history, dateKey);
     const score   = calculateScore({ ...inputs, streakDays: streak });
-    const entry   = { date: dateKey, inputs, score };
+    const entry   = { date: dateKey, inputs, score, note: note || '' };
 
     const updated = [
       ...history.filter(e => e.date !== dateKey),

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useBodyDataContext } from '../../contexts/BodyDataContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getGentleReturn, getWeatherStoryForToday } from '../../constants/weatherStories';
 
 const getWeatherEmoji = (score: number) => {
   if (score >= 80) return '☀️';
@@ -59,46 +60,8 @@ export default function HomeScreen() {
     return t.exhausted;
   };
 
-  const getInsight = () => {
-    if (score >= 80) {
-      if (lang === 'ro') return 'Corpul tău e în formă maximă azi. Ideal pentru muncă creativă și decizii importante.';
-      if (lang === 'fr') return 'Votre corps est au top aujourd\'hui. Idéal pour le travail créatif et les décisions importantes.';
-      if (lang === 'de') return 'Dein Körper ist heute in Topform. Ideal für kreative Arbeit und wichtige Entscheidungen.';
-      if (lang === 'es') return 'Tu cuerpo está en su mejor momento hoy. Ideal para trabajo creativo y decisiones importantes.';
-      if (lang === 'it') return 'Il tuo corpo è in forma oggi. Ideale per lavoro creativo e decisioni importanti.';
-      if (lang === 'pt') return 'O seu corpo está em ótima forma hoje. Ideal para trabalho criativo e decisões importantes.';
-      if (lang === 'zh') return '您的身体今天状态极佳。非常适合创意工作和重要决策。';
-      return 'Your body is at peak performance today. Ideal for creative work and important decisions.';
-    }
-    if (score >= 60) {
-      if (lang === 'ro') return 'Energie bună. Programează sarcinile grele dimineața, relaxează-te după prânz.';
-      if (lang === 'fr') return 'Bonne énergie. Planifiez les tâches difficiles le matin, détendez-vous après le déjeuner.';
-      if (lang === 'de') return 'Gute Energie. Plane schwere Aufgaben morgens, entspanne dich nach dem Mittagessen.';
-      if (lang === 'es') return 'Buena energía. Programa las tareas difíciles por la mañana, relájate después del almuerzo.';
-      if (lang === 'it') return 'Buona energia. Pianifica i compiti difficili la mattina, rilassati dopo pranzo.';
-      if (lang === 'pt') return 'Boa energia. Programe as tarefas difíceis de manhã, relaxe depois do almoço.';
-      if (lang === 'zh') return '能量良好。把困难的任务安排在上午，午饭后放松一下。';
-      return 'Good energy. Schedule demanding tasks in the morning, relax after lunch.';
-    }
-    if (score >= 40) {
-      if (lang === 'ro') return 'Zi moderată. Evită suprasolicitarea și ia pauze scurte la fiecare oră.';
-      if (lang === 'fr') return 'Journée modérée. Évitez la surcharge et faites de courtes pauses toutes les heures.';
-      if (lang === 'de') return 'Mäßiger Tag. Vermeide Überlastung und mache jede Stunde kurze Pausen.';
-      if (lang === 'es') return 'Día moderado. Evita la sobrecarga y toma pausas cortas cada hora.';
-      if (lang === 'it') return 'Giornata moderata. Evita il sovraccarico e fai brevi pause ogni ora.';
-      if (lang === 'pt') return 'Dia moderado. Evite a sobrecarga e faça pausas curtas a cada hora.';
-      if (lang === 'zh') return '状态一般。避免过度劳累，每小时休息一下。';
-      return 'Moderate day. Avoid overexertion and take short breaks every hour.';
-    }
-    if (lang === 'ro') return 'Corpul tău are nevoie de recuperare azi. Prioritizează somnul și hidratarea.';
-    if (lang === 'fr') return 'Votre corps a besoin de récupération aujourd\'hui. Privilégiez le sommeil et l\'hydratation.';
-    if (lang === 'de') return 'Dein Körper braucht heute Erholung. Priorisiere Schlaf und Flüssigkeitszufuhr.';
-    if (lang === 'es') return 'Tu cuerpo necesita recuperación hoy. Prioriza el sueño y la hidratación.';
-    if (lang === 'it') return 'Il tuo corpo ha bisogno di recupero oggi. Dai priorità al sonno e all\'idratazione.';
-    if (lang === 'pt') return 'O seu corpo precisa de recuperação hoje. Priorize o sono e a hidratação.';
-    if (lang === 'zh') return '您的身体今天需要恢复。优先保证睡眠和补水。';
-    return 'Your body needs recovery today. Prioritize sleep and hydration.';
-  };
+  const weatherStory = getWeatherStoryForToday(score, lang);
+  const gentleReturn = getGentleReturn(history, lang);
 
   const getAction = () => {
     if (score >= 80) {
@@ -188,6 +151,12 @@ export default function HomeScreen() {
           </Text>
         </View>
 
+        {gentleReturn && (
+          <View style={styles.returnCard}>
+            <Text style={styles.returnText}>{gentleReturn}</Text>
+          </View>
+        )}
+
         <View style={[styles.cardPrincipal, { borderColor: scoreColor }]}>
           <Text style={styles.emoji}>{scoreEmoji}</Text>
           <AnimatedScore target={score} color="#ffffff" />
@@ -211,9 +180,8 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitlu}>🧠 {t.whatItMeans}</Text>
-          <Text style={styles.cardText}>{getInsight()}</Text>
+        <View style={styles.storyCard}>
+          <Text style={styles.storyText}>{weatherStory}</Text>
         </View>
 
         <View style={[styles.card, styles.cardActiune]}>
@@ -266,6 +234,10 @@ const styles = StyleSheet.create({
   streakNumber: { fontSize: 28, fontWeight: 'bold', color: '#ff8c00' },
   streakLabel: { fontSize: 11, color: '#888888', marginTop: 2 },
   streakMotivation: { flex: 1, fontSize: 14, color: '#cccccc', lineHeight: 20 },
+  storyCard: { backgroundColor: '#1a1a1a', borderRadius: 16, padding: 22, marginBottom: 12, borderWidth: 1, borderColor: '#2a2a2a' },
+  storyText: { fontSize: 17, color: '#ffffff', lineHeight: 26, fontStyle: 'italic', letterSpacing: 0.2 },
+  returnCard: { backgroundColor: '#1a1a2e', borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#3a3a5e' },
+  returnText: { fontSize: 14, color: '#d0d0e0', lineHeight: 20, textAlign: 'center' },
   card: { backgroundColor: '#1a1a1a', borderRadius: 16, padding: 20, marginBottom: 12, borderWidth: 1, borderColor: '#2a2a2a' },
   cardActiune: { borderColor: '#a78bfa', backgroundColor: '#1a1a2e' },
   cardTitlu: { fontSize: 13, color: '#888888', marginBottom: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1 },
