@@ -2,7 +2,7 @@
   "expo": {
     "name": "BodyWeather",
     "slug": "BodyWeather",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "bodyweather",
@@ -16,6 +16,7 @@
       }
     },
     "android": {
+      "package": "com.agriquest.bodyweather",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
