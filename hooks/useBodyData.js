@@ -59,6 +59,34 @@ export function useBodyData() {
     return score;
   }, [history]);
 
+  const seedTestData = useCallback(async () => {
+    const days = 14;
+    const seeded = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateKey = d.toISOString().split('T')[0];
+      const inputs = {
+        sleepHours:   parseFloat((5 + Math.random() * 4).toFixed(1)),
+        sleepQuality: 1 + Math.floor(Math.random() * 5),
+        energy:       3 + Math.floor(Math.random() * 8),
+        hydration:    parseFloat((1 + Math.random() * 2.5).toFixed(1)),
+        stress:       1 + Math.floor(Math.random() * 10),
+      };
+      const score = calculateScore({ ...inputs, streakDays: days - i });
+      const notes = ['', '', '', 'feeling good', 'long day', 'quiet morning', '', 'workout done'];
+      seeded.push({ date: dateKey, inputs, score, note: notes[Math.floor(Math.random() * notes.length)] });
+    }
+    setHistory(seeded);
+    const todayEntry = seeded[seeded.length - 1];
+    if (todayEntry) setTodayInputs({ ...DEFAULT_TODAY, ...todayEntry.inputs });
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+    } catch (e) {
+      console.warn('BodyWeather: eroare seed', e);
+    }
+  }, []);
+
   const liveScore = calculateScore({
     ...todayInputs,
     streakDays: computeStreak(history, todayDateKey()),
@@ -71,6 +99,7 @@ export function useBodyData() {
     setTodayInputs,
     liveScore,
     saveToday,
+    seedTestData,
     history,
     loading,
     streak,

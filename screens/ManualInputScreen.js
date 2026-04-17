@@ -94,7 +94,7 @@ export default function ManualInputScreen() {
       {/* ── Somn ore ── */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardIcon}>🌙</Text>
+          <Text style={styles.cardIcon}>😴</Text>
           <Text style={styles.cardTitle}>{t.sleepHours}</Text>
           <Text style={styles.cardValue}>{todayInputs.sleepHours}h</Text>
         </View>
