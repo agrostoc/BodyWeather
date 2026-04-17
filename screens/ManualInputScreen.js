@@ -1,11 +1,12 @@
 import Slider from '@react-native-community/slider';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Platform,
   ScrollView,
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -14,10 +15,20 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { cancelReminders, scheduleDailyReminder } from '../utils/notifications';
 
 export default function ManualInputScreen() {
-  const { todayInputs, setTodayInputs, liveScore, saveToday } = useBodyData();
+  const { todayInputs, setTodayInputs, liveScore, saveToday, history } = useBodyData();
   const { t, lang } = useLanguage();
   const [saved, setSaved] = useState(false);
   const [reminderOn, setReminderOn] = useState(false);
+  const [note, setNote] = useState('');
+
+  // Preload today's existing note from history (if any)
+  useEffect(() => {
+    const todayKey = new Date().toISOString().split('T')[0];
+    const entry = history.find(e => e.date === todayKey);
+    if (entry && typeof entry.note === 'string') {
+      setNote(entry.note);
+    }
+  }, [history]);
 
   const QUALITY_OPTIONS = [
     { value: 1, emoji: '😴', label: t.terrible },
@@ -52,7 +63,7 @@ export default function ManualInputScreen() {
   };
 
   const handleSave = async () => {
-    await saveToday(todayInputs);
+    await saveToday(todayInputs, note);
     setSaved(true);
   };
 
@@ -182,6 +193,25 @@ export default function ManualInputScreen() {
         </View>
       </View>
 
+      {/* ── Notebook (optional) ── */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardIcon}>📓</Text>
+          <Text style={styles.cardTitle}>{t.notebookTitle}</Text>
+        </View>
+        <TextInput
+          style={styles.noteInput}
+          value={note}
+          onChangeText={(txt) => { setNote(txt); setSaved(false); }}
+          placeholder={t.notebookPlaceholder}
+          placeholderTextColor="#555"
+          multiline
+          maxLength={280}
+          textAlignVertical="top"
+        />
+        <Text style={styles.noteHint}>{t.notebookHint}</Text>
+      </View>
+
       {/* ── Breakdown ── */}
       <View style={styles.card}>
         <Text style={styles.breakdownTitle}>Breakdown</Text>
@@ -306,6 +336,8 @@ const styles = StyleSheet.create({
   sliderLabels:    { flexDirection: 'row', justifyContent: 'space-between', marginTop: -6 },
   sliderLabelText: { fontSize: 11, color: '#555' },
   contextMsg:      { fontSize: 12, color: '#888', marginTop: 8, textAlign: 'center' },
+  noteInput:       { minHeight: 72, backgroundColor: '#0f0f1e', borderRadius: 12, padding: 12, color: '#e0e0f0', fontSize: 14, lineHeight: 20, fontStyle: 'italic' },
+  noteHint:        { fontSize: 11, color: '#555', marginTop: 6, textAlign: 'right' },
 
   qualityRow:        { flexDirection: 'row', justifyContent: 'space-between' },
   qualityBtn:        { alignItems: 'center', padding: 10, borderRadius: 12, flex: 1, marginHorizontal: 3, backgroundColor: '#0f0f1e' },

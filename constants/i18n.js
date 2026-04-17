@@ -113,6 +113,11 @@ export const translations = {
     skip: 'Sari peste',
     getStarted: 'Începe',
 
+    // ── Notebook ──
+    notebookTitle: 'Carnețel',
+    notebookPlaceholder: 'Un cuvânt. Un gând. Orice.',
+    notebookHint: 'Opțional · max 280 caractere',
+
     // ── Settings ──
     tabSettings: 'Setări',
     settingsTitle: 'Setări',
@@ -139,6 +144,13 @@ export const translations = {
     tabToday: 'Azi',
     tabExplore: 'Explorează',
     tabHistory: 'Istoric',
+
+    // ── Apple Health ──
+    importedFromHealth: 'Importat din Apple Health',
+    connectHealth: 'Conectare Apple Health',
+    disconnectHealth: 'Deconectare Apple Health',
+    healthConnected: 'Apple Health conectat',
+    healthDisconnected: 'Apple Health deconectat',
   },
 
   // ── ENGLISH ─────────────────────────────────────────────────────────────
@@ -242,6 +254,10 @@ export const translations = {
     skip: 'Skip',
     getStarted: 'Get Started',
 
+    notebookTitle: 'Notebook',
+    notebookPlaceholder: 'A word. A thought. Anything.',
+    notebookHint: 'Optional · max 280 characters',
+
     tabSettings: 'Settings',
     settingsTitle: 'Settings',
     settingsGeneral: 'General',
@@ -265,6 +281,13 @@ export const translations = {
     tabToday: 'Today',
     tabExplore: 'Explore',
     tabHistory: 'History',
+
+    // ── Apple Health ──
+    importedFromHealth: 'Imported from Apple Health',
+    connectHealth: 'Connect Apple Health',
+    disconnectHealth: 'Disconnect Apple Health',
+    healthConnected: 'Apple Health connected',
+    healthDisconnected: 'Apple Health disconnected',
   },
 
   // ── FRANÇAIS ────────────────────────────────────────────────────────────
@@ -368,6 +391,10 @@ export const translations = {
     skip: 'Passer',
     getStarted: 'Commencer',
 
+    notebookTitle: 'Carnet',
+    notebookPlaceholder: 'Un mot. Une pensée. N\'importe quoi.',
+    notebookHint: 'Facultatif · max 280 caractères',
+
     tabSettings: 'Réglages',
     settingsTitle: 'Réglages',
     settingsGeneral: 'Général',
@@ -391,6 +418,13 @@ export const translations = {
     tabToday: "Aujourd'hui",
     tabExplore: 'Explorer',
     tabHistory: 'Historique',
+
+    // ── Apple Health ──
+    importedFromHealth: "Import\u00e9 depuis Apple Sant\u00e9",
+    connectHealth: 'Connecter Apple Sant\u00e9',
+    disconnectHealth: "D\u00e9connecter Apple Sant\u00e9",
+    healthConnected: "Apple Sant\u00e9 connect\u00e9",
+    healthDisconnected: "Apple Sant\u00e9 d\u00e9connect\u00e9",
   },
 
   // ── DEUTSCH ─────────────────────────────────────────────────────────────
@@ -494,6 +528,10 @@ export const translations = {
     skip: 'Überspringen',
     getStarted: 'Loslegen',
 
+    notebookTitle: 'Notizbuch',
+    notebookPlaceholder: 'Ein Wort. Ein Gedanke. Egal was.',
+    notebookHint: 'Optional · max 280 Zeichen',
+
     tabSettings: 'Einstellungen',
     settingsTitle: 'Einstellungen',
     settingsGeneral: 'Allgemein',
@@ -517,6 +555,13 @@ export const translations = {
     tabToday: 'Heute',
     tabExplore: 'Entdecken',
     tabHistory: 'Verlauf',
+
+    // ── Apple Health ──
+    importedFromHealth: 'Importiert aus Apple Health',
+    connectHealth: 'Apple Health verbinden',
+    disconnectHealth: 'Apple Health trennen',
+    healthConnected: 'Apple Health verbunden',
+    healthDisconnected: 'Apple Health getrennt',
   },
 
   // ── ESPAÑOL ─────────────────────────────────────────────────────────────
@@ -620,6 +665,10 @@ export const translations = {
     skip: 'Omitir',
     getStarted: 'Empezar',
 
+    notebookTitle: 'Cuaderno',
+    notebookPlaceholder: 'Una palabra. Un pensamiento. Cualquier cosa.',
+    notebookHint: 'Opcional · máx 280 caracteres',
+
     tabSettings: 'Ajustes',
     settingsTitle: 'Ajustes',
     settingsGeneral: 'General',
@@ -643,6 +692,13 @@ export const translations = {
     tabToday: 'Hoy',
     tabExplore: 'Explorar',
     tabHistory: 'Historial',
+
+    // ── Apple Health ──
+    importedFromHealth: 'Importado desde Apple Salud',
+    connectHealth: 'Conectar Apple Salud',
+    disconnectHealth: 'Desconectar Apple Salud',
+    healthConnected: 'Apple Salud conectado',
+    healthDisconnected: 'Apple Salud desconectado',
   },
 
   // ── ITALIANO ────────────────────────────────────────────────────────────
@@ -746,6 +802,10 @@ export const translations = {
     skip: 'Salta',
     getStarted: 'Inizia',
 
+    notebookTitle: 'Taccuino',
+    notebookPlaceholder: 'Una parola. Un pensiero. Qualsiasi cosa.',
+    notebookHint: 'Facoltativo · max 280 caratteri',
+
     tabSettings: 'Impostazioni',
     settingsTitle: 'Impostazioni',
     settingsGeneral: 'Generale',
@@ -769,6 +829,13 @@ export const translations = {
     tabToday: 'Oggi',
     tabExplore: 'Esplora',
     tabHistory: 'Cronologia',
+
+    // ── Apple Health ──
+    importedFromHealth: 'Importato da Apple Salute',
+    connectHealth: 'Connetti Apple Salute',
+    disconnectHealth: 'Disconnetti Apple Salute',
+    healthConnected: 'Apple Salute connesso',
+    healthDisconnected: 'Apple Salute disconnesso',
   },
 
   // ── PORTUGUÊS ───────────────────────────────────────────────────────────
@@ -872,6 +939,10 @@ export const translations = {
     skip: 'Saltar',
     getStarted: 'Começar',
 
+    notebookTitle: 'Caderno',
+    notebookPlaceholder: 'Uma palavra. Um pensamento. Qualquer coisa.',
+    notebookHint: 'Opcional · máx 280 caracteres',
+
     tabSettings: 'Definições',
     settingsTitle: 'Definições',
     settingsGeneral: 'Geral',
@@ -895,6 +966,13 @@ export const translations = {
     tabToday: 'Hoje',
     tabExplore: 'Explorar',
     tabHistory: 'Histórico',
+
+    // ── Apple Health ──
+    importedFromHealth: 'Importado do Apple Saúde',
+    connectHealth: 'Conectar Apple Saúde',
+    disconnectHealth: 'Desconectar Apple Saúde',
+    healthConnected: 'Apple Saúde conectado',
+    healthDisconnected: 'Apple Saúde desconectado',
   },
 
   // ── 中文 ────────────────────────────────────────────────────────────────
@@ -998,6 +1076,10 @@ export const translations = {
     skip: '跳过',
     getStarted: '开始使用',
 
+    notebookTitle: '笔记本',
+    notebookPlaceholder: '一个词。一个想法。任何东西。',
+    notebookHint: '可选 · 最多280字符',
+
     tabSettings: '设置',
     settingsTitle: '设置',
     settingsGeneral: '通用',
@@ -1021,6 +1103,13 @@ export const translations = {
     tabToday: '今天',
     tabExplore: '探索',
     tabHistory: '历史',
+
+    // ── Apple Health ──
+    importedFromHealth: '已从 Apple 健康导入',
+    connectHealth: '连接 Apple 健康',
+    disconnectHealth: '断开 Apple 健康',
+    healthConnected: 'Apple 健康已连接',
+    healthDisconnected: 'Apple 健康已断开',
   },
 };
 
